@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>匿名の漂流郵便箱</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;300;400&family=Shippori+Mincho:wght@400;500&family=Noto+Serif+TC:wght@200;300;400&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:'Shippori Mincho',serif;background:#060e1a;}
+
+  .music-btn{
+    position:fixed;top:16px;left:16px;z-index:100;
+    width:36px;height:36px;border-radius:50%;
+    background:rgba(255,255,255,0.07);
+    border:1px solid rgba(200,215,240,0.2);
+    color:rgba(200,215,240,0.6);font-size:15px;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    transition:all 0.3s;backdrop-filter:blur(6px);
+  }
+  .music-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(200,215,240,0.4);}
+  .music-btn.playing{border-color:rgba(160,200,255,0.5);color:rgba(180,220,255,0.9);}
+
+  .site{
+    background:linear-gradient(180deg,#060e1a 0%,#0d1b2e 35%,#0e2240 65%,#122b4a 100%);
+    min-height:100vh;position:relative;overflow:hidden;
+  }
+  .sky-layer{position:absolute;top:0;left:0;right:0;height:55%;pointer-events:none;overflow:hidden;}
+  .star{position:absolute;background:#e8f0ff;border-radius:50%;animation:tw var(--d,3s) var(--delay,0s) infinite alternate;}
+  @keyframes tw{from{opacity:.1}to{opacity:.9}}
+  .moon{position:absolute;top:24px;right:80px;width:48px;height:48px;background:radial-gradient(circle at 35% 35%,#f8f0d0,#ddd0a0);border-radius:50%;z-index:2;box-shadow:0 0 24px rgba(240,220,160,0.4),0 0 70px rgba(240,220,160,0.15);}
+  .ocean{position:absolute;bottom:0;left:0;right:0;height:42%;background:linear-gradient(180deg,#0e2a4a 0%,#0a1e38 60%,#081628 100%);overflow:hidden;}
+  .wave{position:absolute;left:-50%;width:200%;border-radius:50%;opacity:0.18;animation:wv 8s linear infinite;}
+  .wave1{top:-12px;height:50px;background:#4a9eda;animation-duration:7s;}
+  .wave2{top:-6px;height:40px;background:#2a7ab8;animation-duration:9s;animation-delay:-3s;opacity:0.12;}
+  .wave3{top:0;height:30px;background:#6ab0e0;animation-duration:11s;animation-delay:-5s;opacity:0.1;}
+  @keyframes wv{from{transform:translateX(0)}to{transform:translateX(25%)}}
+  .island-wrap{position:absolute;bottom:38%;left:50%;transform:translateX(-50%);width:300px;z-index:4;}
+  .view{display:none;width:100%;}
+  .view.active{display:block;}
+  .scene-view{position:relative;min-height:100vh;}
+  .title-area{position:absolute;top:28px;left:0;right:0;text-align:center;z-index:10;}
+  .title-jp{font-family:'Noto Serif JP',serif;font-weight:200;font-size:14px;color:rgba(200,210,240,0.55);letter-spacing:6px;margin-bottom:6px;}
+  .title-main{font-family:'Noto Serif JP',serif;font-weight:300;font-size:22px;color:rgba(210,225,255,0.85);letter-spacing:10px;}
+  .float-hint{position:absolute;bottom:calc(38% + 165px);left:50%;transform:translateX(-50%);z-index:20;text-align:center;white-space:nowrap;}
+  .hint-text{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(200,215,240,0.55);letter-spacing:3px;animation:bob 3s ease-in-out infinite;display:block;}
+  .hint-arrow{color:rgba(200,215,240,0.35);font-size:14px;animation:bob 3s ease-in-out infinite;display:block;margin-top:3px;}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+  .write-btn{position:absolute;bottom:calc(38% + 12px);left:50%;transform:translateX(-34px);z-index:20;background:rgba(192,57,43,0.88);border:1px solid rgba(255,200,180,0.3);border-radius:22px;color:#fde8e0;font-family:'Noto Serif JP',serif;font-size:13px;font-weight:300;letter-spacing:3px;padding:10px 22px;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(4px);}
+  .write-btn:hover{background:rgba(212,77,63,0.95);box-shadow:0 4px 24px rgba(192,57,43,0.55);transform:translateX(-34px) translateY(-2px);}
+  .bottle{position:absolute;z-index:3;opacity:0.4;animation:float-bottle var(--bt,12s) ease-in-out infinite;font-size:20px;}
+  @keyframes float-bottle{0%,100%{transform:translateY(0) rotate(-8deg)}50%{transform:translateY(-12px) rotate(8deg)}}
+
+  .letter-view{background:linear-gradient(160deg,#0a1628,#0e2240);min-height:100vh;padding:36px 20px 40px;position:relative;overflow:hidden;}
+  .letter-bg-deco{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;background:radial-gradient(ellipse at 80% 20%,rgba(42,90,138,0.15) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(42,90,138,0.10) 0%,transparent 50%);}
+  .letter-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;position:relative;z-index:2;max-width:520px;margin-left:auto;margin-right:auto;}
+  .back-btn{background:none;border:1px solid rgba(200,215,240,0.2);border-radius:50%;width:34px;height:34px;color:rgba(200,215,240,0.6);font-size:15px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .back-btn:hover{border-color:rgba(200,215,240,0.5);color:rgba(200,215,240,0.9);}
+  .letter-title{font-family:'Noto Serif JP',serif;font-weight:200;font-size:15px;color:rgba(200,215,240,0.6);letter-spacing:5px;}
+  .paper-wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;}
+  .paper{background:linear-gradient(160deg,#f7f0e0,#f0e8d0);border-radius:2px 2px 0 0;padding:34px 30px 28px;position:relative;box-shadow:0 10px 50px rgba(0,0,0,0.55),0 2px 10px rgba(0,0,0,0.35);}
+  .paper::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8b7355,#c4a96e,#8b7355);border-radius:2px 2px 0 0;}
+  .paper-lines{position:absolute;top:68px;left:30px;right:30px;bottom:0;pointer-events:none;background-image:repeating-linear-gradient(transparent,transparent 28px,rgba(160,140,100,0.15) 28px,rgba(160,140,100,0.15) 29px);}
+  .paper-deco{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(100,80,50,0.45);letter-spacing:4px;margin-bottom:18px;text-align:center;border-bottom:1px solid rgba(160,130,80,0.22);padding-bottom:12px;}
+  .no-address{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(120,100,65,0.5);letter-spacing:2px;margin-bottom:20px;font-style:italic;}
+  .letter-input{width:100%;background:transparent;border:none;outline:none;font-family:'Shippori Mincho',serif;font-size:15px;color:#2c1810;line-height:29px;resize:none;min-height:240px;letter-spacing:1px;}
+  .letter-input::placeholder{color:rgba(120,100,70,0.4);}
+  .char-note{text-align:right;font-size:11px;color:rgba(100,80,50,0.4);margin-top:8px;font-family:'Noto Serif JP',serif;}
+  .seal-area{background:linear-gradient(160deg,#ede5ce,#e8dcc0);padding:18px 30px 22px;border-top:1px solid rgba(160,130,80,0.3);border-radius:0 0 2px 2px;box-shadow:0 10px 50px rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .postmark{width:54px;height:54px;border:2px solid rgba(192,57,43,0.5);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+  .postmark::before{content:'';position:absolute;width:48px;height:48px;border:1px solid rgba(192,57,43,0.3);border-radius:50%;}
+  .postmark-text{font-family:'Noto Serif JP',serif;font-weight:200;font-size:8px;color:rgba(192,57,43,0.65);letter-spacing:1px;}
+  .send-btn{background:linear-gradient(135deg,#8b2020,#c0392b);border:none;border-radius:24px;color:#fde8e0;font-family:'Noto Serif JP',serif;font-weight:300;font-size:14px;letter-spacing:4px;padding:13px 30px;cursor:pointer;transition:all 0.3s;flex:1;}
+  .send-btn:hover{background:linear-gradient(135deg,#a02828,#d44e3e);box-shadow:0 6px 28px rgba(192,57,43,0.55);transform:translateY(-1px);}
+  .send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;}
+
+  .success-view{background:linear-gradient(160deg,#0a1628,#0e2240);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;position:relative;overflow:hidden;}
+  .success-icon{font-size:56px;margin-bottom:22px;animation:rise 0.8s ease;}
+  @keyframes rise{from{opacity:0;transform:translateY(32px)}to{opacity:1;transform:translateY(0)}}
+  .success-title{font-family:'Noto Serif JP',serif;font-weight:200;font-size:20px;color:rgba(210,225,255,0.85);letter-spacing:7px;margin-bottom:16px;text-align:center;}
+  .success-sub{font-family:'Noto Serif JP',serif;font-weight:200;font-size:13px;color:rgba(160,180,220,0.6);letter-spacing:3px;text-align:center;line-height:2.2;margin-bottom:36px;}
+  .again-btn{background:none;border:1px solid rgba(200,215,240,0.25);border-radius:22px;color:rgba(200,215,240,0.6);font-family:'Noto Serif JP',serif;font-weight:200;font-size:13px;letter-spacing:3px;padding:12px 28px;cursor:pointer;transition:all 0.3s;}
+  .again-btn:hover{border-color:rgba(200,215,240,0.5);color:rgba(200,215,240,0.9);}
+
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(12,30,55,0.96);color:rgba(200,225,255,0.88);font-family:'Noto Serif JP',serif;font-weight:200;font-size:12px;letter-spacing:2px;padding:11px 26px;border-radius:22px;border:1px solid rgba(100,160,220,0.3);transition:transform 0.4s ease;z-index:200;white-space:nowrap;pointer-events:none;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+
+  .zh{
+    display:block;
+    font-family:'Noto Serif TC',serif;
+    font-size:10px;
+    color:rgba(200,215,240,0.38);
+    letter-spacing:2px;
+    margin-top:3px;
+    font-weight:200;
+  }
+  .hint-text .zh{color:rgba(200,215,240,0.38);}
+  .paper-deco .zh{color:rgba(100,80,50,0.35);font-size:10px;}
+  .no-address .zh{color:rgba(120,100,65,0.4);font-size:10px;margin-top:2px;}
+  .success-title .zh{font-size:12px;color:rgba(180,200,240,0.5);letter-spacing:3px;margin-top:5px;}
+  .success-sub .zh{font-size:11px;color:rgba(150,175,220,0.45);letter-spacing:2px;margin-top:-4px;display:inline-block;}
+  .zh-btn{
+    display:block;
+    font-family:'Noto Serif TC',serif;
+    font-size:9px;
+    letter-spacing:2px;
+    color:rgba(255,220,210,0.55);
+    margin-top:1px;
+    font-weight:200;
+  }
+  .letter-title .zh{color:rgba(200,215,240,0.35);font-size:10px;letter-spacing:2px;}
+
+
+  .textarea-wrap{position:relative;}
+  .custom-placeholder{
+    position:absolute;top:0;left:0;right:0;
+    pointer-events:none;
+    padding:0;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  .ph-jp{
+    font-family:'Shippori Mincho',serif;
+    font-size:15px;
+    color:rgba(120,100,70,0.38);
+    line-height:29px;
+    letter-spacing:1px;
+    display:block;
+  }
+  .ph-zh{
+    font-family:'Noto Serif TC',serif;
+    font-size:11px;
+    color:rgba(120,100,70,0.28);
+    line-height:18px;
+    letter-spacing:1px;
+    display:block;
+    margin-bottom:4px;
+  }
+  .custom-placeholder.hidden{display:none;}
+  .reply-hint{
+    font-family:'Noto Serif JP',serif;
+    font-weight:200;
+    font-size:12px;
+    color:rgba(120,100,65,0.6);
+    letter-spacing:1.5px;
+    line-height:1.6;
+    margin-bottom:14px;
+    padding:0;
+    border:none;
+  }
+  .reply-hint .zh{
+    display:block;
+    font-family:'Noto Serif TC',serif;
+    font-size:10px;
+    color:rgba(120,100,65,0.42);
+    letter-spacing:1px;
+    margin-top:3px;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+</head>
+<body>
+
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()">♪</button>
+<div class="toast" id="toast"></div>
+
+
+<div class="site">
+
+  <!-- SCENE -->
+  <div class="view active" id="sceneView">
+    <div class="sky-layer" id="skyLayer"></div>
+    <div class="moon"></div>
+
+    <div class="title-area">
+      <div class="title-jp">匿 名 の 漂 流 郵 便 箱</div>
+      <div class="title-main">流れる手紙</div>
+    </div>
+
+    <div class="island-wrap">
+      <svg width="300" height="220" viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="150" cy="205" rx="118" ry="15" fill="#1a4a7a" opacity="0.4"/>
+        <ellipse cx="150" cy="188" rx="112" ry="29" fill="#c8b570"/>
+        <ellipse cx="150" cy="184" rx="107" ry="25" fill="#dcc880"/>
+        <ellipse cx="150" cy="180" rx="102" ry="21" fill="#e8d890"/>
+        <ellipse cx="138" cy="176" rx="64" ry="11" fill="#f0e4a0" opacity="0.5"/>
+        <ellipse cx="48" cy="180" rx="13" ry="7" fill="#a89560"/>
+        <ellipse cx="256" cy="182" rx="11" ry="6" fill="#a89560"/>
+        <ellipse cx="235" cy="174" rx="7" ry="4" fill="#b8a870"/>
+        <line x1="82" y1="178" x2="74" y2="108" stroke="#5a3e20" stroke-width="5.5" stroke-linecap="round"/>
+        <line x1="74" y1="108" x2="32" y2="78" stroke="#4a7a30" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="74" y1="108" x2="58" y2="70" stroke="#4a7a30" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="74" y1="108" x2="98" y2="76" stroke="#4a7a30" stroke-width="3.5" stroke-linecap="round"/>
+        <line x1="74" y1="108" x2="108" y2="92" stroke="#4a7a30" stroke-width="3" stroke-linecap="round"/>
+        <ellipse cx="32" cy="76" rx="15" ry="7.5" fill="#3a8a30" transform="rotate(-20,32,76)"/>
+        <ellipse cx="55" cy="67" rx="14" ry="6.5" fill="#448a38" transform="rotate(-10,55,67)"/>
+        <ellipse cx="100" cy="73" rx="15" ry="6.5" fill="#3a8a30" transform="rotate(15,100,73)"/>
+        <ellipse cx="110" cy="90" rx="13" ry="5.5" fill="#4a9038" transform="rotate(25,110,90)"/>
+        <circle cx="72" cy="112" r="4.5" fill="#8b6030"/>
+        <circle cx="78" cy="115" r="3.8" fill="#7a5025"/>
+        <line x1="210" y1="176" x2="218" y2="116" stroke="#5a3e20" stroke-width="4.5" stroke-linecap="round"/>
+        <line x1="218" y1="116" x2="248" y2="90" stroke="#4a7a30" stroke-width="3" stroke-linecap="round"/>
+        <line x1="218" y1="116" x2="194" y2="88" stroke="#4a7a30" stroke-width="3" stroke-linecap="round"/>
+        <line x1="218" y1="116" x2="238" y2="108" stroke="#4a7a30" stroke-width="2.5" stroke-linecap="round"/>
+        <ellipse cx="250" cy="88" rx="13" ry="5.5" fill="#3a8a30" transform="rotate(15,250,88)"/>
+        <ellipse cx="192" cy="86" rx="12" ry="5.5" fill="#448a38" transform="rotate(-15,192,86)"/>
+        <ellipse cx="240" cy="106" rx="12" ry="5" fill="#3a8a30" transform="rotate(25,240,106)"/>
+        <rect x="138" y="136" width="7" height="44" rx="2.5" fill="#6b4423"/>
+        <rect x="122" y="122" width="40" height="30" rx="5" fill="#c0392b"/>
+        <ellipse cx="142" cy="122" rx="20" ry="6.5" fill="#a93020"/>
+        <rect x="127" y="132" width="30" height="3.5" rx="1.5" fill="#8b2010"/>
+        <ellipse cx="132" cy="126" rx="7" ry="4.5" fill="rgba(255,150,130,0.25)"/>
+        <line x1="162" y1="122" x2="162" y2="112" stroke="#6b4423" stroke-width="1.5"/>
+        <polygon points="162,112 172,115 162,119" fill="#e8a030"/>
+        <circle cx="178" cy="175" r="3" fill="#f0a080" opacity="0.8"/>
+        <circle cx="184" cy="173" r="2.2" fill="#f8c0a0" opacity="0.7"/>
+        <circle cx="108" cy="176" r="2.8" fill="#f0d080" opacity="0.7"/>
+      </svg>
+    </div>
+
+    <div class="float-hint">
+      <span class="hint-text">ポストに手紙を入れる<span class="zh">把信放進郵筒</span></span>
+      <span class="hint-arrow">↓</span>
+    </div>
+    <button class="write-btn" onclick="showView('writeView')">手紙を書く<span class="zh-btn">寫一封信</span></button>
+
+    <div class="bottle" style="bottom:22%;left:10%;--bt:11s;">🍶</div>
+    <div class="bottle" style="bottom:18%;left:26%;--bt:14s;animation-delay:-4s;font-size:16px;">📜</div>
+    <div class="bottle" style="bottom:25%;right:12%;--bt:9s;animation-delay:-7s;">🫙</div>
+    <div class="bottle" style="bottom:20%;right:30%;--bt:13s;animation-delay:-2s;font-size:15px;">📜</div>
+
+    <div class="ocean">
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
+      <div class="wave wave3"></div>
+    </div>
+  </div>
+
+  <!-- WRITE -->
+  <div class="view" id="writeView">
+    <div class="letter-view">
+      <div class="letter-bg-deco"></div>
+      <div class="letter-header">
+        <button class="back-btn" onclick="showView('sceneView')">←</button>
+        <span class="letter-title">手紙を書く<span class="zh">寫一封信</span></span>
+      </div>
+      <div class="paper-wrap">
+        <div class="paper">
+          <div class="paper-lines"></div>
+          <div class="paper-deco">― 宛先のない手紙 ―<span class="zh">一封沒有地址的信</span></div>
+          <div class="no-address">差出人：匿名　　宛先：どこかへ<span class="zh">寄件人：匿名　　收件人：某個遠方</span></div>
+          <div class="reply-hint">
+            返信を希望する場合は、受信可能なメールアドレスをご記入ください<span class="zh">若需要得到回覆，請留下能收到信的 Email</span>
+          </div>
+          <div class="textarea-wrap">
+            <div class="custom-placeholder" id="customPlaceholder">
+              <span class="ph-jp">あなたの言葉を、波に乗せて送ります。</span>
+              <span class="ph-zh">把你的話，乘著波浪送出去。</span>
+              <span class="ph-jp">どんな言葉でも、ここに置いていってください…</span>
+              <span class="ph-zh">無論什麼都可以，輕輕地放下…</span>
+            </div>
+            <textarea class="letter-input" id="letterContent" maxlength="800"
+              oninput="updateCount();togglePlaceholder()" onfocus="togglePlaceholder()"></textarea>
+          </div>
+          <div class="char-note"><span id="letterCount">0</span> / 800</div>
+        </div>
+        <div class="seal-area">
+          <div class="postmark">
+            <div class="postmark-text">匿名</div>
+            <div class="postmark-text" style="font-size:7px;margin-top:3px;">漂流</div>
+          </div>
+          <button class="send-btn" id="sendBtn" onclick="sendLetter()">投函する ✉<span class="zh-btn">投入信箱</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="view" id="successView">
+    <div class="success-view">
+      <div class="success-icon">🌊</div>
+      <div class="success-title">手紙が海へ流れていきました<span class="zh">信已隨海漂去了</span></div>
+      <div class="success-sub">
+        あなたの言葉は波に乗り<br><span class="zh">你的話語乘著波浪</span>
+        どこか遠くへ届くでしょう<br><span class="zh">會飄向某個遙遠的地方</span><br><br>
+        信を放った ― 信を手放した<br><span class="zh">放出了信，也放下了心</span>
+      </div>
+      <button class="again-btn" onclick="writeAgain()">もう一通書く<span class="zh-btn">再寫一封</span></button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ── Stars ── */
+(function(){
+  const c=document.getElementById('skyLayer');
+  for(let i=0;i<60;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const sz=Math.random()*2+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${Math.random()*4}s;`;
+    c.appendChild(s);
+  }
+})();
+
+/* ── EmailJS config ── */
+const W3F_KEY = '6f8220e5-b626-4c49-9ab6-a3727b77b657';
+
+
+/* ── Views ── */
+function showView(id){
+  ['sceneView','writeView','successView'].forEach(v=>{
+    document.getElementById(v).classList.toggle('active',v===id);
+  });
+}
+function togglePlaceholder(){
+  const ta = document.getElementById('letterContent');
+  const ph = document.getElementById('customPlaceholder');
+  if(!ph) return;
+  if(ta.value.length > 0){ ph.classList.add('hidden'); }
+  else { ph.classList.remove('hidden'); }
+}
+function updateCount(){
+  document.getElementById('letterCount').textContent=document.getElementById('letterContent').value.length;
+}
+
+/* ── Toast ── */
+let toastTimer=null;
+function showToast(msg,ms=3200){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),ms);
+}
+
+/* ── Send via EmailJS ── */
+async function sendLetter(){
+  const text=document.getElementById('letterContent').value.trim();
+  if(!text){showToast('手紙に言葉を書いてください…');return;}
+
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=true;btn.textContent='送信中…';
+
+  const d=new Date().toLocaleString('ja-JP',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  try{
+    const resp = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({
+        access_key: W3F_KEY,
+        subject: '【匿名の漂流手紙】',
+        from_name: '匿名の漂流郵便箱',
+        message: `差出人：匿名\n宛先：どこかへ\n投函日時：${d}\n\n――――――――――――\n\n${text}\n\n――――――――――――\n\nこの手紙は波に乗って届きました。`
+      })
+    });
+    const result = await resp.json();
+    console.log('Web3Forms:', result);
+    if(!result.success) throw new Error(result.message || 'failed');
+    showView('successView');
+  }catch(err){
+    console.error('EmailJS error:', err);
+    const detail = err && err.message ? err.message : String(err);
+    showToast('送信失敗：' + detail, 6000);
+    btn.disabled=false; btn.textContent='投函する ✉';
+  }
+}
+
+function writeAgain(){
+  document.getElementById('letterContent').value='';
+  document.getElementById('letterCount').textContent='0';
+  const btn=document.getElementById('sendBtn');
+  btn.disabled=false;btn.textContent='投函する ✉';
+  showView('sceneView');
+}
+
+/* ══════════════════════════════════
+   Music — Tone.js (mobile compatible)
+   海浪白噪音 + C 五聲音階鋼琴
+══════════════════════════════════ */
+let musicOn = false;
+let noiseSynth = null, noiseLFO = null, pianoPart = null, toneStarted = false;
+
+const NOTES = ['C4','D4','E4','G4','A4','C5','D5','E5','G5','A5','G3','A3'];
+
+async function ensureToneStarted(){
+  if(!toneStarted){
+    await Tone.start();
+    toneStarted = true;
+  }
+}
+
+function buildOceanNoise(){
+  const filter = new Tone.Filter({frequency: 320, type: 'lowpass', Q: 0.8}).toDestination();
+  const hpFilter = new Tone.Filter({frequency: 80, type: 'highpass'}).connect(filter);
+  noiseSynth = new Tone.Noise('pink').connect(hpFilter);
+  noiseSynth.volume.value = -18;
+
+  noiseLFO = new Tone.LFO({frequency: 0.07, min: -24, max: -14}).start();
+  noiseLFO.connect(noiseSynth.volume);
+  noiseSynth.start();
+}
+
+function buildPiano(){
+  const reverb = new Tone.Reverb({decay: 4, wet: 0.5}).toDestination();
+  const piano = new Tone.PolySynth(Tone.Synth, {
+    oscillator: {type: 'sine'},
+    envelope: {attack: 0.02, decay: 0.4, sustain: 0.3, release: 2.5},
+    volume: -14
+  }).connect(reverb);
+
+  function scheduleNote(){
+    const count = Math.random() < 0.35 ? 3 : 2;
+    const now = Tone.now();
+    for(let i = 0; i < count; i++){
+      const note = NOTES[Math.floor(Math.random() * NOTES.length)];
+      const vel = 0.3 + Math.random() * 0.4;
+      piano.triggerAttackRelease(note, '2n', now + i * 0.28, vel);
+    }
+    const gap = 3500 + Math.random() * 3000;
+    pianoPart = setTimeout(scheduleNote, gap);
+  }
+  scheduleNote();
+}
+
+async function startMusic(){
+  await ensureToneStarted();
+  Tone.getDestination().volume.rampTo(-4, 2);
+  buildOceanNoise();
+  buildPiano();
+}
+
+function stopMusic(){
+  clearTimeout(pianoPart); pianoPart = null;
+  try{ noiseSynth && noiseSynth.stop(); noiseSynth && noiseSynth.dispose(); }catch(e){}
+  try{ noiseLFO && noiseLFO.stop(); noiseLFO && noiseLFO.dispose(); }catch(e){}
+  noiseSynth = null; noiseLFO = null;
+  Tone.getDestination().volume.rampTo(-Infinity, 1.5);
+}
+
+async function toggleMusic(){
+  const btn = document.getElementById('musicBtn');
+  if(musicOn){
+    stopMusic(); musicOn = false;
+    btn.classList.remove('playing'); btn.textContent = '♪';
+    showToast('音楽を停止しました');
+  } else {
+    try{
+      await startMusic(); musicOn = true;
+      btn.classList.add('playing'); btn.textContent = '♫';
+      showToast('海と鋼琴の音楽が流れています…');
+    } catch(e){
+      console.error('Audio error:', e);
+      showToast('音樂啟動失敗，請再點一次 ♪');
+    }
+  }
+}
+</script>
+</body>
+</html>
