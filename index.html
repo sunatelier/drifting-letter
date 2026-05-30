@@ -53,7 +53,7 @@
   .wave2{top:-6px;height:40px;background:#2a7ab8;animation-duration:9s;animation-delay:-3s;opacity:0.12;}
   .wave3{top:0;height:30px;background:#6ab0e0;animation-duration:11s;animation-delay:-5s;opacity:0.1;}
   @keyframes wv{from{transform:translateX(0)}to{transform:translateX(25%)}}
-  .island-wrap{position:absolute;bottom:36%;left:50%;transform:translateX(-50%);width:420px;z-index:4;}
+  .island-wrap{position:absolute;bottom:36%;left:50%;transform:translateX(-50%);width:min(420px, 92vw);z-index:4;}
   .view{display:none;width:100%;}
   .view.active{display:block;}
   .scene-view{position:relative;min-height:100vh;}
@@ -64,8 +64,8 @@
   .hint-text{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(200,215,240,0.55);letter-spacing:3px;animation:bob 3s ease-in-out infinite;display:block;}
   .hint-arrow{color:rgba(200,215,240,0.35);font-size:14px;animation:bob 3s ease-in-out infinite;display:block;margin-top:3px;}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  .write-btn{position:absolute;bottom:calc(38% + 12px);left:50%;transform:translateX(-34px);z-index:20;background:rgba(192,57,43,0.88);border:1px solid rgba(255,200,180,0.3);border-radius:22px;color:#fde8e0;font-family:'Noto Serif JP',serif;font-size:13px;font-weight:300;letter-spacing:3px;padding:10px 22px;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(4px);}
-  .write-btn:hover{background:rgba(212,77,63,0.95);box-shadow:0 4px 24px rgba(192,57,43,0.55);transform:translateX(-34px) translateY(-2px);}
+  .write-btn{position:absolute;bottom:calc(38% + 12px);left:50%;transform:translateX(-50%);z-index:20;background:rgba(192,57,43,0.88);border:1px solid rgba(255,200,180,0.3);border-radius:22px;color:#fde8e0;font-family:'Noto Serif JP',serif;font-size:13px;font-weight:300;letter-spacing:3px;padding:10px 22px;cursor:pointer;transition:all 0.3s;backdrop-filter:blur(4px);}
+  .write-btn:hover{background:rgba(212,77,63,0.95);box-shadow:0 4px 24px rgba(192,57,43,0.55);transform:translateX(-50%) translateY(-2px);}
   .sky-layer{position:absolute;top:0;left:0;right:0;height:100%;pointer-events:none;overflow:hidden;z-index:1;}
   .star{position:absolute;background:#e8f0ff;border-radius:50%;animation:tw var(--d,3s) var(--delay,0s) infinite alternate;}
   @keyframes tw{from{opacity:.1}to{opacity:.9}}
@@ -183,7 +183,7 @@
   @media (max-width: 768px){
     .title-jp{ font-size:12px; letter-spacing:4px; }
     .title-main{ font-size:18px; letter-spacing:6px; }
-    .island-wrap{ width:320px; bottom:35%; }
+    .island-wrap{ width:min(340px, 90vw); bottom:35%; }
     .moon{ width:80px; height:80px; top:16px; right:20px; }
     .music-btn{ width:44px; height:44px; font-size:18px; top:14px; left:14px; }
     .float-hint{ bottom:calc(35% + 135px); }
@@ -204,7 +204,7 @@
   @media (max-width: 480px){
     .title-jp{ font-size:11px; letter-spacing:3px; }
     .title-main{ font-size:16px; letter-spacing:5px; }
-    .island-wrap{ width:260px; bottom:34%; }
+    .island-wrap{ width:min(280px, 88vw); bottom:34%; }
     .moon{ width:62px; height:62px; top:14px; right:14px; }
     .music-btn{ width:40px; height:40px; font-size:16px; top:12px; left:12px; }
     .float-hint{ bottom:calc(34% + 110px); }
@@ -214,9 +214,10 @@
       padding:8px 16px;
       font-size:12px;
       letter-spacing:2px;
-      transform:translateX(-42px);
+      left:50%;
+      transform:translateX(-50%);
     }
-    .write-btn:hover{ transform:translateX(-42px) translateY(-2px); }
+    .write-btn:hover{ transform:translateX(-50%) translateY(-2px); }
     .letter-header{ padding:0 4px; margin-bottom:16px; }
     .letter-title{ font-size:13px; letter-spacing:3px; }
     .letter-view{ padding:20px 10px 24px; }
@@ -246,7 +247,7 @@
   ══════════════════════════════════ */
   @media (max-width: 360px){
     .title-main{ font-size:14px; letter-spacing:4px; }
-    .island-wrap{ width:220px; }
+    .island-wrap{ width:min(220px, 85vw); }
     .write-btn{ font-size:11px; padding:7px 14px; }
     .paper{ padding:16px 12px 14px; }
     .letter-input{ font-size:12px; }
@@ -273,7 +274,7 @@
     </div>
 
     <div class="island-wrap">
-      <svg width="420" height="300" viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+      <svg width="100%" height="auto" viewBox="0 0 420 300" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
   <!-- Water reflection -->
   <ellipse cx="210" cy="282" rx="165" ry="18" fill="#0a2a4a" opacity="0.5"/>
   <ellipse cx="210" cy="278" rx="140" ry="10" fill="#1a4a7a" opacity="0.3"/>
