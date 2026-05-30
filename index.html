@@ -176,6 +176,82 @@
     letter-spacing:1px;
     margin-top:3px;
   }
+
+  /* ══════════════════════════════════
+     RWD — Tablet (max 768px)
+  ══════════════════════════════════ */
+  @media (max-width: 768px){
+    .title-jp{ font-size:12px; letter-spacing:4px; }
+    .title-main{ font-size:18px; letter-spacing:6px; }
+    .island-wrap{ width:320px; bottom:35%; }
+    .moon{ width:80px; height:80px; top:16px; right:20px; }
+    .music-btn{ width:44px; height:44px; font-size:18px; top:14px; left:14px; }
+    .float-hint{ bottom:calc(35% + 135px); }
+    .write-btn{ bottom:calc(35% + 8px); padding:9px 18px; font-size:12px; }
+    .letter-view{ padding:24px 14px 30px; }
+    .paper{ padding:24px 18px 20px; }
+    .paper-wrap{ max-width:100%; }
+    .seal-area{ padding:14px 18px 16px; }
+    .send-btn{ font-size:13px; padding:12px 18px; letter-spacing:3px; }
+    .letter-input{ font-size:14px; min-height:200px; }
+    .success-title{ font-size:16px; letter-spacing:5px; }
+    .success-sub{ font-size:12px; }
+  }
+
+  /* ══════════════════════════════════
+     RWD — Mobile (max 480px)
+  ══════════════════════════════════ */
+  @media (max-width: 480px){
+    .title-jp{ font-size:11px; letter-spacing:3px; }
+    .title-main{ font-size:16px; letter-spacing:5px; }
+    .island-wrap{ width:260px; bottom:34%; }
+    .moon{ width:62px; height:62px; top:14px; right:14px; }
+    .music-btn{ width:40px; height:40px; font-size:16px; top:12px; left:12px; }
+    .float-hint{ bottom:calc(34% + 110px); }
+    .hint-text{ font-size:10px; letter-spacing:2px; }
+    .write-btn{
+      bottom:calc(34% + 6px);
+      padding:8px 16px;
+      font-size:12px;
+      letter-spacing:2px;
+      transform:translateX(-42px);
+    }
+    .write-btn:hover{ transform:translateX(-42px) translateY(-2px); }
+    .letter-header{ padding:0 4px; margin-bottom:16px; }
+    .letter-title{ font-size:13px; letter-spacing:3px; }
+    .letter-view{ padding:20px 10px 24px; }
+    .paper{ padding:20px 14px 16px; }
+    .paper-deco{ font-size:10px; letter-spacing:2px; }
+    .no-address{ font-size:10px; }
+    .reply-hint{ font-size:11px; }
+    .reply-hint .zh{ font-size:9px; }
+    .letter-input{ font-size:13px; min-height:180px; line-height:1.8; }
+    .char-note{ font-size:10px; }
+    .seal-area{ padding:12px 14px 14px; gap:10px; }
+    .postmark{ width:46px; height:46px; }
+    .postmark-text{ font-size:7px; }
+    .send-btn{ font-size:12px; padding:11px 14px; letter-spacing:2px; }
+    .success-icon{ font-size:42px; margin-bottom:16px; }
+    .success-title{ font-size:15px; letter-spacing:4px; }
+    .success-sub{ font-size:11px; letter-spacing:2px; line-height:2; }
+    .again-btn{ font-size:11px; padding:10px 20px; letter-spacing:2px; }
+    .bottle{ font-size:14px !important; }
+    .zh{ font-size:9px; }
+    .zh-btn{ font-size:8px; }
+    .toast{ font-size:11px; padding:9px 18px; white-space:normal; text-align:center; max-width:80vw; }
+  }
+
+  /* ══════════════════════════════════
+     RWD — Small Mobile (max 360px)
+  ══════════════════════════════════ */
+  @media (max-width: 360px){
+    .title-main{ font-size:14px; letter-spacing:4px; }
+    .island-wrap{ width:220px; }
+    .write-btn{ font-size:11px; padding:7px 14px; }
+    .paper{ padding:16px 12px 14px; }
+    .letter-input{ font-size:12px; }
+  }
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 </head>
