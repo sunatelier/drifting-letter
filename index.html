@@ -81,10 +81,10 @@
   .paper-wrap{position:relative;z-index:2;max-width:520px;margin:0 auto;}
   .paper{background:linear-gradient(160deg,#f7f0e0,#f0e8d0);border-radius:2px 2px 0 0;padding:34px 30px 28px;position:relative;box-shadow:0 10px 50px rgba(0,0,0,0.55),0 2px 10px rgba(0,0,0,0.35);}
   .paper::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#8b7355,#c4a96e,#8b7355);border-radius:2px 2px 0 0;}
-  .paper-lines{position:absolute;top:68px;left:30px;right:30px;bottom:0;pointer-events:none;background-image:repeating-linear-gradient(transparent,transparent 28px,rgba(160,140,100,0.15) 28px,rgba(160,140,100,0.15) 29px);}
-  .paper-deco{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(100,80,50,0.45);letter-spacing:4px;margin-bottom:18px;text-align:center;border-bottom:1px solid rgba(160,130,80,0.22);padding-bottom:12px;}
+
+  .paper-deco{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(100,80,50,0.45);letter-spacing:4px;margin-bottom:18px;text-align:center;padding-bottom:8px;}
   .no-address{font-family:'Noto Serif JP',serif;font-weight:200;font-size:11px;color:rgba(120,100,65,0.5);letter-spacing:2px;margin-bottom:20px;font-style:italic;}
-  .letter-input{width:100%;background:transparent;border:none;outline:none;font-family:'Shippori Mincho',serif;font-size:15px;color:#2c1810;line-height:29px;resize:none;min-height:240px;letter-spacing:1px;}
+  .letter-input{width:100%;background:transparent;border:none;outline:none;font-family:'Shippori Mincho',serif;font-size:15px;color:#2c1810;line-height:1.9;resize:none;min-height:240px;letter-spacing:1px;}
   .letter-input::placeholder{color:rgba(120,100,70,0.4);}
   .char-note{text-align:right;font-size:11px;color:rgba(100,80,50,0.4);margin-top:8px;font-family:'Noto Serif JP',serif;}
   .seal-area{background:linear-gradient(160deg,#ede5ce,#e8dcc0);padding:18px 30px 22px;border-top:1px solid rgba(160,130,80,0.3);border-radius:0 0 2px 2px;box-shadow:0 10px 50px rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:space-between;gap:14px;}
@@ -348,7 +348,6 @@
       </div>
       <div class="paper-wrap">
         <div class="paper">
-          <div class="paper-lines"></div>
           <div class="paper-deco">― 宛先のない手紙 ―<span class="zh">一封沒有地址的信</span></div>
           <div class="no-address">差出人：匿名　　宛先：どこかへ<span class="zh">寄件人：匿名　　收件人：某個遠方</span></div>
           <div class="reply-hint">
